@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Talent Intelligence – Premium Glass Edition</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Segoe UI;
+background:linear-gradient(135deg,#0f172a,#020617);
+color:white;
+overflow-x:hidden;
+}
+
+/* Glass UI */
+.card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.1);
+padding:25px;
+border-radius:20px;
+margin-bottom:25px;
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+animation:fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:40px;
+}
+
+button{
+padding:12px 22px;
+border:none;
+border-radius:10px;
+background:#3b82f6;
+color:white;
+cursor:pointer;
+font-weight:bold;
+margin-top:15px;
+transition:0.3s;
+}
+button:hover{background:#2563eb;}
+
+input,textarea{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+background:#0f172a;
+color:white;
+}
+
+.ring{
+width:200px;
+height:200px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:34px;
+font-weight:bold;
+margin:auto;
+transition:1.5s;
+background:conic-gradient(#3b82f6 0deg,#1e293b 0deg);
+}
+
+.skill{
+display:inline-block;
+background:#1e293b;
+padding:6px 14px;
+border-radius:20px;
+margin:6px;
+font-size:13px;
+}
+
+.section-title{
+color:#60a5fa;
+font-size:20px;
+margin-bottom:15px;
+}
+
+.hidden{display:none;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🚀 AI Talent Intelligence – Glass AI Engine</h2>
+
+<div class="card">
+<input type="file" id="resume" accept=".txt">
+<button onclick="analyze()">Run Advanced AI Analysis</button>
+</div>
+
+<div id="results" class="hidden">
+
+<div class="card">
+<h3 align="center">AI Compatibility Score</h3>
+<div class="ring" id="ring">0%</div>
+<p align="center" id="tier"></p>
+</div>
+
+<div class="card">
+<div class="section-title">📊 ATS Score</div>
+<p id="atsScore"></p>
+</div>
+
+<div class="card">
+<div class="section-title">🤖 Predicted Career Roles</div>
+<div id="roles"></div>
+</div>
+
+<div class="card">
+<div class="section-title">🧠 Skill Clusters</div>
+<div id="clusters"></div>
+</div>
+
+<div class="card">
+<div class="section-title">📈 Market Demand Overview</div>
+<canvas id="chart"></canvas>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* Dynamic Skill Database */
+let skillDB=[
+"python","machine learning","deep learning","nlp",
+"sql","data analysis","html","css","javascript",
+"react","node.js","tensorflow","excel",
+"communication","leadership","problem solving"
+];
+
+/* Skill Clustering Categories */
+const clusters={
+"AI & ML":["python","machine learning","deep learning","tensorflow","nlp"],
+"Web Development":["html","css","javascript","react","node.js"],
+"Analytics":["sql","data analysis","excel"],
+"Soft Skills":["communication","leadership","problem solving"]
+};
+
+const marketDemand={
+"AI Engineer":95,
+"Data Scientist":90,
+"Full Stack Developer":85,
+"Business Analyst":80
+};
+
+function clean(text){
+return text.toLowerCase().replace(/[^\w\s]/gi," ");
+}
+
+/* NLP-like Parsing */
+function extractSkills(text){
+text=clean(text);
+let found=[];
+skillDB.forEach(skill=>{
+if(text.includes(skill)) found.push(skill);
+});
+
+/* Dynamic DB Expansion */
+let words=text.split(" ");
+words.forEach(word=>{
+if(word.length>6 && !skillDB.includes(word)){
+skillDB.push(word);
+}
+});
+
+return [...new Set(found)];
+}
+
+function analyze(){
+
+const resumeFile=document.getElementById("resume").files[0];
+if(!resumeFile){alert("Upload Resume");return;}
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+const resumeText=e.target.result;
+let resumeSkills=extractSkills(resumeText);
+
+document.getElementById("results").classList.remove("hidden");
+
+/* Smart Role Prediction */
+let bestRole="";
+let bestScore=0;
+
+for(let role in marketDemand){
+let score=resumeSkills.length * (marketDemand[role]/100);
+if(score>bestScore){
+bestScore=score;
+bestRole=role;
+}
+}
+
+/* AI Compatibility */
+let compatibility=Math.min(100, resumeSkills.length*10);
+
+let ring=document.getElementById("ring");
+ring.style.background=
+`conic-gradient(#3b82f6 ${compatibility*3.6}deg,#1e293b ${compatibility*3.6}deg)`;
+ring.innerHTML=compatibility+"%";
+
+document.getElementById("tier").innerHTML=
+compatibility>80?"🟢 Elite Candidate":
+compatibility>60?"🟡 Competitive Profile":
+"🔴 Skill Development Required";
+
+/* ATS Score */
+let ats=Math.min(100, resumeSkills.length*12);
+document.getElementById("atsScore").innerHTML=
+"ATS Optimization Score: <b>"+ats+"%</b> — Resume keyword alignment level.";
+
+/* Role Output */
+document.getElementById("roles").innerHTML=
+`<span class="skill">${bestRole}</span>`;
+
+/* Clustering */
+let clusterDiv=document.getElementById("clusters");
+clusterDiv.innerHTML="";
+
+for(let category in clusters){
+let matched=clusters[category].filter(skill=>resumeSkills.includes(skill));
+if(matched.length>0){
+clusterDiv.innerHTML+=`<b>${category}</b><br>`;
+matched.forEach(skill=>{
+clusterDiv.innerHTML+=`<span class="skill">${skill}</span>`;
+});
+clusterDiv.innerHTML+="<br><br>";
+}
+}
+
+/* Chart */
+new Chart(document.getElementById("chart"),{
+type:"bar",
+data:{
+labels:Object.keys(marketDemand),
+datasets:[{
+data:Object.values(marketDemand),
+backgroundColor:"#3b82f6"
+}]
+},
+options:{
+plugins:{legend:{display:false}}
+}
+});
+
+};
+
+reader.readAsText(resumeFile);
+}
+
+</script>
+</body>
+</html>
